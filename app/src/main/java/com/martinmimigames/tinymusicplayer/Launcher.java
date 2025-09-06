@@ -1,18 +1,29 @@
 package com.martinmimigames.tinymusicplayer;
 
+import static java.lang.Thread.currentThread;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.system.Os;
+import android.util.Log;
+
+import java.io.File;
 
 /**
  * activity for controlling the playback by invoking different logics based on incoming intents
  */
 public class Launcher extends Activity {
 
+  protected void mmxLog(String msg)
+  {
+    Log.i("mmx", "launch tid(" + currentThread().getId()+"):"+ currentThread().getName() +" =>"+msg );
+  }
 
   static final String TYPE = "type";
   static final byte NULL = 0;
@@ -29,6 +40,7 @@ public class Launcher extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    mmxLog("onCreate: activity: "+this.toString() + " intent: "+getIntent().getAction().toString());
     if (!Intent.ACTION_VIEW.equals(getIntent().getAction())
       && !Intent.ACTION_SEND.equals(getIntent().getAction())) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -45,9 +57,14 @@ public class Launcher extends Activity {
       }
 
       /* request a file from the system */
-      var intent = new Intent(Intent.ACTION_GET_CONTENT);
-      intent.setType("audio/*"); // intent type to filter application based on your requirement
-      startActivityForResult(intent, REQUEST_CODE);
+//      var intent = new Intent(Intent.ACTION_GET_CONTENT);
+//      intent.setType("audio/*"); // intent type to filter application based on your requirement
+//      startActivityForResult(intent, REQUEST_CODE);
+
+      var intent = new Intent(Intent.ACTION_VIEW);
+      var Uri = android.net.Uri.fromFile(new File("/storage/sdcard0/Download/09.mp3"));
+      intent.setData(Uri);
+      onIntent(intent);
       return;
     }
     onIntent(getIntent());

@@ -5,10 +5,16 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import java.io.IOException;
 
 class AudioPlayer extends Thread implements MediaPlayer.OnCompletionListener {
+
+  protected void mmxLog(String msg)
+  {
+    Log.i("mmx", "audioplayer tid(" + currentThread().getId()+"):"+ currentThread().getName() +" =>"+msg );
+  }
 
   private final Service service;
   private final MediaPlayer mediaPlayer;
@@ -24,6 +30,8 @@ class AudioPlayer extends Thread implements MediaPlayer.OnCompletionListener {
    * @throws IOException              when the audio file cannot be read.
    */
   public AudioPlayer(Service service, Uri audioLocation) throws IllegalArgumentException, IllegalStateException, SecurityException, IOException {
+    mmxLog("thread construct : "+this.toString());
+
     this.service = service;
     /* initiate new audio player */
     mediaPlayer = new MediaPlayer();
@@ -51,6 +59,7 @@ class AudioPlayer extends Thread implements MediaPlayer.OnCompletionListener {
   @Override
   public void run() {
     /* get ready for playback */
+    mmxLog("thread run : "+this.toString());
     try {
       mediaPlayer.prepare();
       service.setState(true, false);
@@ -59,6 +68,7 @@ class AudioPlayer extends Thread implements MediaPlayer.OnCompletionListener {
     } catch (IOException e) {
       Exceptions.throwError(service, Exceptions.IO);
     }
+    mmxLog("thread finish : "+this.toString());
   }
 
   /**
@@ -100,6 +110,13 @@ class AudioPlayer extends Thread implements MediaPlayer.OnCompletionListener {
   @Override
   public void onCompletion(MediaPlayer mp) {
     service.stopSelf();
+    mmxLog("complete : "+this.toString());
+  }
+
+  @Override
+  protected void finalize() throws Throwable {
+    mmxLog("finalize : "+this.toString());
+    super.finalize();
   }
 
   /**
@@ -107,6 +124,7 @@ class AudioPlayer extends Thread implements MediaPlayer.OnCompletionListener {
    */
   @Override
   public void interrupt() {
+    mmxLog("interrupt : "+this.toString());
     mediaPlayer.release();
     super.interrupt();
   }

@@ -15,7 +15,7 @@
     a:icon="@drawable/ic_launcher"
     a:label="Tiny Music Player"
     a:restoreAnyVersion="true"
-    tools:targetApi="froyo">
+    tools:targetApi="lollipop_mr1">
 
     <receiver
       a:name=".HWListener"

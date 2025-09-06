@@ -1,10 +1,13 @@
 package com.martinmimigames.tinymusicplayer;
 
+import static java.lang.Thread.currentThread;
+
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -12,6 +15,11 @@ import java.io.IOException;
  * service for playing music
  */
 public class Service extends android.app.Service {
+
+  protected void mmxLog(String msg)
+  {
+    Log.i("mmx", "servie tid(" + currentThread().getId()+"):"+ currentThread().getName() +" =>"+msg );
+  }
 
   final HWListener hwListener;
   final Notifications notifications;
@@ -23,7 +31,15 @@ public class Service extends android.app.Service {
   public Service() {
     hwListener = new HWListener(this);
     notifications = new Notifications(this);
+    mmxLog("onConstruct: service "+this.toString());
   }
+
+  @Override
+  protected void finalize() throws Throwable {
+    mmxLog("onDelete: service "+this.toString());
+    super.finalize();
+  }
+
 
   /**
    * unused
@@ -40,6 +56,7 @@ public class Service extends android.app.Service {
   public void onCreate() {
     hwListener.create();
     notifications.create();
+    mmxLog("onCreate: service "+this.toString() + " notifi: "+notifications.toString());
 
     super.onCreate();
   }
@@ -49,6 +66,7 @@ public class Service extends android.app.Service {
    */
   @Override
   public void onStart(final Intent intent, final int startId) {
+    mmxLog("onStart: service "+this.toString() + " notifi: "+notifications.toString());
     /* check if called from self */
     if (intent.getAction() == null) {
       var isPLaying = audioPlayer.isPlaying();
@@ -118,6 +136,7 @@ public class Service extends android.app.Service {
    */
   @Override
   public void onDestroy() {
+    mmxLog("onDestroy: service "+this.toString() + " notifi: "+notifications.toString());
     notifications.destroy();
     hwListener.destroy();
     /* interrupt audio playback logic */

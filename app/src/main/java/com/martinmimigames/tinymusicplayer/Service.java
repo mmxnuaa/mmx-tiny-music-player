@@ -28,10 +28,13 @@ public class Service extends android.app.Service {
    */
   private AudioPlayer audioPlayer;
 
+  SongFinder songFinder;
+
   public Service() {
     hwListener = new HWListener(this);
     notifications = new Notifications(this);
     mmxLog("onConstruct: service "+this.toString());
+    songFinder = SongFinder.Inst();
   }
 
   @Override

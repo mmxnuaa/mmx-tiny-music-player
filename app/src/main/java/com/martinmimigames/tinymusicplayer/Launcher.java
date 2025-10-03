@@ -62,7 +62,8 @@ public class Launcher extends Activity {
 //      startActivityForResult(intent, REQUEST_CODE);
 
       var intent = new Intent(Intent.ACTION_VIEW);
-      var Uri = android.net.Uri.fromFile(new File("/storage/sdcard0/Download/09.mp3"));
+//      var Uri = android.net.Uri.fromFile(new File("/storage/sdcard0/Download/09.mp3"));
+      var Uri = android.net.Uri.fromFile(new File("/data/local/tmp/tf1/EnglishSong/Top Hits of 2019/100. Paulo Londra - Adan y Eva.mp3"));
       intent.setData(Uri);
       onIntent(intent);
       return;

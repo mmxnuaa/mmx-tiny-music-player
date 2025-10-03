@@ -54,6 +54,8 @@ class AudioPlayer extends Thread implements MediaPlayer.OnCompletionListener {
 
     /* setup listeners for further logics */
     mediaPlayer.setOnCompletionListener(this);
+
+    mmxLog("media play init");
   }
 
   @Override
@@ -109,8 +111,9 @@ class AudioPlayer extends Thread implements MediaPlayer.OnCompletionListener {
    */
   @Override
   public void onCompletion(MediaPlayer mp) {
-    service.stopSelf();
+//    service.stopSelf();
     mmxLog("complete : "+this.toString());
+    service.TryNextSong();
   }
 
   @Override

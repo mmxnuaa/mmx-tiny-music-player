@@ -51,49 +51,28 @@ class SongFinder {
     }
 
     Runnable findNextSongRunnable = new Runnable() {
-        File song;
+        com.mmx.tool.SongFinder finder = null;
         int loop = 0;
-        int index = 0;
-        File[] files = null;
-
-//        File root = new File(Environment.getExternalStorageDirectory().toString());
-        File root = new File("/storage/emulated/0/kkk");
         @Override
         public void run() {
             loop++;
-            mmxLog("loop:"+ loop);
-            mmxLog("start find: root "+root.getAbsolutePath() );
-            if (files == null)
+            if (finder == null)
             {
-                files = root.listFiles();
-                if (files == null)
-                {
-                    mmxLog("list file fail");
-
-                }
+                finder = new com.mmx.tool.SongFinder();
+                finder.Init();
             }
-            mmxLog("files "+files);
-            if (files != null) {
-                mmxLog("file numbers: " + files.length);
-                if (index < files.length) {
-                    mmxLog("idx " + index + " : " + files[index].toString());
-                    if (songFindResultCallBack != null)
-                    {
-                        songFindResultCallBack.OnResult(Uri.parse(files[index].toURI().toString()));
+            finder.GetNext(
+                    new com.mmx.tool.SongFinder.NextSongCallBack() {
+                        @Override
+                        public void OnNextSong(File song) {
+                            if (songFindResultCallBack != null)
+                            {
+                                songFindResultCallBack.OnResult(Uri.parse(song.toURI().toString()));
+                            }
+                        }
                     }
-                    index++;
-                }
-                else {
-                    mmxLog("find finish ");
-                }
-//                    try {
-//                        Thread.sleep(10000);
-//                        mmxLog("next round");
-//                        executor.execute(this);
-//                    } catch (InterruptedException e) {
-//                        mmxLog("sleep exception" + e);
-//                    }
-            }
+            );
+            finder.NextSong();
         }
     };
 

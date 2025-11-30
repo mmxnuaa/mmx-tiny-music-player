@@ -53,6 +53,7 @@ class SongFinder {
     Runnable findNextSongRunnable = new Runnable() {
         com.mmx.tool.SongFinder finder = null;
         int loop = 0;
+
         @Override
         public void run() {
             loop++;
@@ -73,6 +74,13 @@ class SongFinder {
                     }
             );
             finder.NextSong();
+
+            // set minimum delay between songs to avoid CPU burn out
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     };
 

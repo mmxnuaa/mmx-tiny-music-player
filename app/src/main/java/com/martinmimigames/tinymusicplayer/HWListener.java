@@ -3,6 +3,8 @@ package com.martinmimigames.tinymusicplayer;
 
 import static android.content.Intent.EXTRA_KEY_EVENT;
 
+import static java.lang.Thread.currentThread;
+
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,6 +14,7 @@ import android.media.AudioManager;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 import android.os.Build;
+import android.util.Log;
 import android.view.KeyEvent;
 
 /**
@@ -24,6 +27,10 @@ public class HWListener extends BroadcastReceiver {
   private PlaybackState.Builder playbackStateBuilder;
   private ComponentName cn;
 
+  protected void mmxLog(String msg)
+  {
+    Log.i("mmx", "HWListener tid(" + currentThread().getId()+"):"+ currentThread().getName() +" =>"+msg );
+  }
   /**
    * Required for older android versions,
    * initialized by the system
@@ -105,6 +112,7 @@ public class HWListener extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     var event = (KeyEvent) intent.getParcelableExtra(EXTRA_KEY_EVENT);
+    mmxLog("Key down: ");
     if (event.getAction() == KeyEvent.ACTION_DOWN) {
       intent = new Intent(context, Service.class);
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -120,6 +128,13 @@ public class HWListener extends BroadcastReceiver {
           break;
         case KeyEvent.KEYCODE_MEDIA_STOP:
           intent.putExtra(Launcher.TYPE, Launcher.KILL);
+          break;
+        case KeyEvent.KEYCODE_MEDIA_NEXT:
+          intent.setAction(Intent.ACTION_MAIN);
+          intent.putExtra(Launcher.TYPE, Launcher.PLAY);
+          break;
+        case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+          intent.putExtra(Launcher.TYPE, Launcher.PAUSE);
           break;
         default:
           return;

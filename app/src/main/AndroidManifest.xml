@@ -27,7 +27,7 @@
 
     <service
       a:name=".Service"
-      a:exported="false" />
+      a:exported="true" />
 
     <activity
       a:name=".Launcher"

@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class SongFinder {
 
+
     private static class Folder {
 
         String path;
@@ -16,6 +17,14 @@ public class SongFinder {
         Map<String, String[]> tags;
 
         String[] songs;
+
+        private static final String[] support_music_extensions = {
+                "mp3",
+                "wav",
+                "flac",
+                "m4a",
+                "ape",
+        };
 
         // child folder
         Folder(Folder parent, String name) {
@@ -72,7 +81,17 @@ public class SongFinder {
         }
 
         private boolean isFileExtInSupportList(String name) {
-            return true;
+            int dotIndex = name.lastIndexOf('.'); // Find the last occurrence of '.'
+
+            if (dotIndex > 0 && dotIndex < name.length() - 1) { // Ensure a valid extension exists
+                String extension = name.substring(dotIndex + 1); // Extract the substring after the dot
+                for (String ext : support_music_extensions) {
+                    if (ext.equals(extension)) { // Use .equals() for String comparison
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         void FilterSong(Filter filter, AcceptAction action) {
@@ -132,7 +151,10 @@ public class SongFinder {
         }
     }
 
-//    private final String[] rootPath = {
+//    m4v
+//    cue
+
+    //    private final String[] rootPath = {
 //            "/mnt/1Text4/CAR_BACKUP/music/",
 //            "/mnt/1Text4/CAR_BACKUP/03 发烧女声精选200首/"
 //    };

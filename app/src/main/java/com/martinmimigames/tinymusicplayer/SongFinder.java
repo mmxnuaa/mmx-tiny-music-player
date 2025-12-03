@@ -79,7 +79,7 @@ class SongFinder {
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+//                throw new RuntimeException(e);
             }
         }
     };

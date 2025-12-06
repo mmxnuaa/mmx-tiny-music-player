@@ -27,7 +27,9 @@ public class Service extends android.app.Service {
   /**
    * audio playing logic class
    */
-  private AudioPlayer audioPlayer;
+  private AudioPlayer audioPlayer = null;
+
+  private Boolean isWaitingForNextSong = new Boolean(false);
 
   SongFinder songFinder;
 
@@ -69,11 +71,15 @@ public class Service extends android.app.Service {
   /**
    * startup logic
    */
+  @SuppressWarnings("deprecation") //for old version
   @Override
-  public void onStart(final Intent intent, final int startId) {
+  public void onStart(Intent intent, int startId )
+  {
     mmxLog("onStart: service "+this.toString() + " notifi: "+notifications.toString());
-    /* check if called from self */
-    if (intent.getAction() == null) {
+    if (intent == null){
+      mmxLog("service start with null intent, just play next song ");
+      TryNextSong();
+    }else if (intent.getAction() == null) {/* check if called from self */
       var isPLaying = audioPlayer.isPlaying();
       var isLooping = audioPlayer.isLooping();
       switch (intent.getByteExtra(Launcher.TYPE, Launcher.NULL)) {
@@ -101,8 +107,14 @@ public class Service extends android.app.Service {
     boolean result=false;
     try {
       /* get audio playback logic and start async */
-      audioPlayer = new AudioPlayer(this, audioLocation);
-      audioPlayer.start();
+      if (audioPlayer == null) {
+        audioPlayer = new AudioPlayer(this);
+      }
+
+      //noinspection ConstantConditions
+      if (audioPlayer != null) {
+        audioPlayer.Play(audioLocation);
+      }
 
       /* create notification for playback control */
       notifications.getNotification(audioLocation);
@@ -137,6 +149,15 @@ public class Service extends android.app.Service {
   void TryNextSong()
   {
     Context context = this;
+
+    synchronized (isWaitingForNextSong)
+    {
+      if (isWaitingForNextSong)
+      {
+        return;
+      }
+      isWaitingForNextSong = true;
+    }
     SongFinder.Inst().NextSong(new SongFindResult() {
       @Override
       public void OnResult(Uri uri) {
@@ -144,7 +165,13 @@ public class Service extends android.app.Service {
         var intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(uri);
         intent.setClass(context, Service.class);
-        stopService(intent);
+//        stopService(intent);
+
+        synchronized (isWaitingForNextSong)
+        {
+          isWaitingForNextSong = false;
+        }
+
         startService(intent);
       }
     });
@@ -154,9 +181,16 @@ public class Service extends android.app.Service {
    * Switch to player component state
    */
   void setState(boolean playing, boolean looping) {
-    audioPlayer.setState(playing, looping);
-    hwListener.setState(playing, looping);
-    notifications.setState(playing, looping);
+    try {
+      audioPlayer.setState(playing, looping);
+      hwListener.setState(playing, looping);
+      notifications.setState(playing, looping);
+    }
+    catch (IllegalStateException e)
+    {
+      mmxLog("error during set state:"+ e.toString());
+      TryNextSong();
+    }
   }
 
   /**
@@ -179,7 +213,10 @@ public class Service extends android.app.Service {
     hwListener.destroy();
     /* interrupt audio playback logic */
 
-    if (audioPlayer!=null && !audioPlayer.isInterrupted()) audioPlayer.interrupt();
+    if (audioPlayer!=null) {
+      audioPlayer.Release();
+      audioPlayer = null;
+    }
 
     super.onDestroy();
   }

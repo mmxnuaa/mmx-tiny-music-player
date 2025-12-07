@@ -52,57 +52,58 @@ public class HWListener extends BroadcastReceiver {
    * Initializer, only useful when SDK_INT >= LOLLIPOP
    */
   void create() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      mediaSession = new MediaSession(service, HWListener.class.toString());
-
-      mediaSession.setCallback(new MediaSession.Callback() {
-        @Override
-        public boolean onMediaButtonEvent(Intent mediaButtonIntent) {
-          onReceive(service, mediaButtonIntent);
-          return super.onMediaButtonEvent(mediaButtonIntent);
-        }
-      });
-
-      playbackStateBuilder = new PlaybackState.Builder();
-      playbackStateBuilder.setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PAUSE | PlaybackState.ACTION_PLAY_PAUSE);
-      mediaSession.setPlaybackState(playbackStateBuilder.build());
-
-      mediaSession.setActive(true);
-    } else {
+    mmxLog("aaaaaaaaa");
+//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//      mediaSession = new MediaSession(service, HWListener.class.toString());
+//
+//      mediaSession.setCallback(new MediaSession.Callback() {
+//        @Override
+//        public boolean onMediaButtonEvent(Intent mediaButtonIntent) {
+//          onReceive(service, mediaButtonIntent);
+//          return super.onMediaButtonEvent(mediaButtonIntent);
+//        }
+//      });
+//
+//      playbackStateBuilder = new PlaybackState.Builder();
+//      playbackStateBuilder.setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PAUSE | PlaybackState.ACTION_PLAY_PAUSE);
+//      mediaSession.setPlaybackState(playbackStateBuilder.build());
+//
+//      mediaSession.setActive(true);
+//    } else {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
         cn = new ComponentName(service, HWListener.class);
         ((AudioManager) service.getSystemService(Context.AUDIO_SERVICE)).registerMediaButtonEventReceiver(cn);
       }
       service.registerReceiver(this, new IntentFilter(Intent.ACTION_MEDIA_BUTTON));
-    }
+//    }
   }
 
   /**
    * Switch playback state, only useful when SDK_INT >= LOLLIPOP
    */
   void setState(boolean playing, boolean looping) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (playing)
-        playbackStateBuilder.setState(PlaybackState.STATE_PLAYING, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1);
-      else
-        playbackStateBuilder.setState(PlaybackState.STATE_PAUSED, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1);
-      mediaSession.setPlaybackState(playbackStateBuilder.build());
-    }
+//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//      if (playing)
+//        playbackStateBuilder.setState(PlaybackState.STATE_PLAYING, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1);
+//      else
+//        playbackStateBuilder.setState(PlaybackState.STATE_PAUSED, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1);
+//      mediaSession.setPlaybackState(playbackStateBuilder.build());
+//    }
   }
 
   /**
    * Get ready to be destroyed, only useful when SDK_INT >= LOLLIPOP
    */
   void destroy() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      mediaSession.setActive(false);
-      mediaSession.release();
-    } else {
+//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//      mediaSession.setActive(false);
+//      mediaSession.release();
+//    } else {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
         ((AudioManager) service.getSystemService(Context.AUDIO_SERVICE)).unregisterMediaButtonEventReceiver(cn);
       }
       service.unregisterReceiver(this);
-    }
+//    }
   }
 
   /**

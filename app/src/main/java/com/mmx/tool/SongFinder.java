@@ -161,6 +161,9 @@ public class SongFinder {
     private final String[] rootPath = {
             "/data/local/mmxdisk/JinSun/song",
     };
+//    private final String[] rootPath = {
+//            "/sdcard/Music",
+//    };
     private final Vector<Root> roots = new Vector<SongFinder.Root>();
 
     public void Init() {

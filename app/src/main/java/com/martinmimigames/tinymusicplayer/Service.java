@@ -90,6 +90,8 @@ public class Service extends android.app.Service {
         case Launcher.LOOP -> setState(isPLaying, !isLooping);
         /* cancel audio playback and kill service */
         case Launcher.KILL -> stopSelf();
+        case Launcher.NEXT -> TryNextSong();
+        case Launcher.PREVIOUS -> {}
       }
     } else {
       switch (intent.getAction()) {

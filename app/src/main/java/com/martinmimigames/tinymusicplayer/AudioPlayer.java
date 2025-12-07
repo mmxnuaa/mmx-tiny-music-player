@@ -62,6 +62,8 @@ class AudioPlayer implements MediaPlayer.OnCompletionListener, MediaPlayer.OnErr
     {
       InitMediaPlayer();
     }
+
+    mediaPlayer.reset();
     /* setup player variables */
     mediaPlayer.setDataSource(service, audioLocation);
 

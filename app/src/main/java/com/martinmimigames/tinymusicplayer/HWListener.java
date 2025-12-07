@@ -110,31 +110,33 @@ public class HWListener extends BroadcastReceiver {
    * Does not connect directly to service variable because service may not be initialized.
    */
   @Override
-  public void onReceive(Context context, Intent intent) {
-    var event = (KeyEvent) intent.getParcelableExtra(EXTRA_KEY_EVENT);
-    mmxLog("Key down: ");
+  public void onReceive(Context context, Intent KeyIntent) {
+    var event = (KeyEvent) KeyIntent.getParcelableExtra(EXTRA_KEY_EVENT);
+    mmxLog("Key down: "+KeyIntent+", code: "+event);
     if (event.getAction() == KeyEvent.ACTION_DOWN) {
-      intent = new Intent(context, Service.class);
+      Intent intent = new Intent(context, Service.class);
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
       switch (event.getKeyCode()) {
         case KeyEvent.KEYCODE_MEDIA_PLAY:
           intent.putExtra(Launcher.TYPE, Launcher.PLAY);
           break;
         case KeyEvent.KEYCODE_MEDIA_PAUSE:
-          intent.putExtra(Launcher.TYPE, Launcher.PAUSE);
+//          intent.putExtra(Launcher.TYPE, Launcher.PAUSE);
+          intent.putExtra(Launcher.TYPE, Launcher.NEXT);
           break;
         case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-          intent.putExtra(Launcher.TYPE, Launcher.PLAY_PAUSE);
+//          intent.putExtra(Launcher.TYPE, Launcher.PLAY_PAUSE);
+          intent.putExtra(Launcher.TYPE, Launcher.NEXT);
           break;
         case KeyEvent.KEYCODE_MEDIA_STOP:
           intent.putExtra(Launcher.TYPE, Launcher.KILL);
           break;
         case KeyEvent.KEYCODE_MEDIA_NEXT:
           intent.setAction(Intent.ACTION_MAIN);
-          intent.putExtra(Launcher.TYPE, Launcher.PLAY);
+          intent.putExtra(Launcher.TYPE, Launcher.NEXT);
           break;
         case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-          intent.putExtra(Launcher.TYPE, Launcher.PAUSE);
+          intent.putExtra(Launcher.TYPE, Launcher.PREVIOUS);
           break;
         default:
           return;
